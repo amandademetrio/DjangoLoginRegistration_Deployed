@@ -30,7 +30,7 @@ class UserManager(models.Manager):
             errors['already_registered'] = "Email is already in the database"
         #Making sure both passwords match
         if postData['password'] != postData['confirm_password']:
-            errors['password_match'] = "Both passwords match"
+            errors['password_match'] = "Both passwords need to match"
         return errors
     
     def login_validator(self,postData):
