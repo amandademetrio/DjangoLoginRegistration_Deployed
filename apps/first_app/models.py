@@ -51,6 +51,24 @@ class UserManager(models.Manager):
             if not bcrypt.checkpw(postData['password'].encode(), log_user.password.encode()):
                 errors['pw_db_check'] = "Invalid credentials"
         return errors
+    
+    def update_validator(self,postData):
+        errors = {}
+        #Checking length
+        if len(postData['new_first_name']) < 1:
+            errors['new_first_name_len'] = "First name cannot be empty"
+        if len(postData['new_last_name']) < 2:
+            errors['new_last_name_len'] = "Last name cannot be empty"
+        if len(postData['new_email']) < 2:
+            errors['new_email_len'] = "Email cannot be empty"
+        #Checking email format
+        if not EMAIL_REGEX.match(postData['new_email']):
+            errors['email_format_update'] = "Invalid email format"
+        #Checking if email is in the database
+        if User.objects.filter(email=postData['new_email']):
+            errors['email_db_check'] = "This email is already in our database"
+
+        return errors
 
 class User(models.Model):
     first_name = models.CharField(max_length=255)
@@ -60,3 +78,39 @@ class User(models.Model):
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
     objects = UserManager()
+
+class AuthorManager(models.Manager):
+    def author_validator(self,postData):
+        errors = {}
+        #Checking for length
+        if len(postData['author']) < 3:
+            errors['author_name_len'] = "Author name must be at least 3 characters long"
+        return errors
+
+class Author(models.Model):
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    objects = AuthorManager()
+
+class QuoteManager(models.Manager):
+    def quote_validator(self,postData):
+        errors = {}
+        #Checking for length
+        if len(postData['quote']) < 10:
+            errors['quote_len'] = "Quote must be at least 10 characters long"
+        return errors
+
+class Quote(models.Model):
+    quote = models.TextField()
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    posted_by = models.ForeignKey(User, related_name="posted_quotes")
+    said_by = models.ForeignKey(Author, related_name="said_quotes")
+    objects = QuoteManager()
+
+class Like(models.Model):
+    liked_message = models.ForeignKey(Quote, related_name="likes")
+    liker = models.ForeignKey(User, related_name="liked_messages")
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)

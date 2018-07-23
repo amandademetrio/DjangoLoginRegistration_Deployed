@@ -2,11 +2,16 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Login and Registration</title>
+    <title>Quotes for Days!</title>
     <!-- Botstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'first_app/css/styles.css' %}" />
+    <style>
+    .red {
+        color: red
+    }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -15,15 +20,66 @@
             <a class="navbar-brand" href="#"><img src="{% static 'first_app/images/flamingo.png' %}" alt="Website Logo" id="website_logo"/>
             </a></a>
             <ul class="navbar-nav mr-auto"></ul>
-            <button class="btn btn-light my-2 my-sm-0" type="submit">Logout</button>
+            <a href="/myaccount/{{request.session.user_id}}" class="btn btn-light my-2 my-sm-0 mr-2">Edit My Account</a>
+            <a href="/logout" class="btn btn-light my-2 my-sm-0">Logout</a>
         </nav>
         <div class="row">
             <div class="col-sm-12">
-                <h1>Welcome, you've been logged in!</h1>
+                <h1 class="display-4">Welcome, {{user.first_name}}!</h1>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12"></div>
+            <div class="col-sm-8 border-right">
+                <h5 class="mb-3">Quotes</h5>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'like_error' in message.extra_tags %}
+                        <p class="red">{{ message }}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% for quote in quotes reversed %}
+                <!-- Start of quote card -->
+                <div class="card mr-2 mb-3">
+                    <div class="card-header">Posted by <a href="/user/{{quote.posted_by.id}}">{{quote.posted_by.first_name}} {{quote.posted_by.last_name}}</a></div>
+                    <div class="card-body">
+                        <p class="card-text">{{quote.said_by.name}}: "{{quote.quote}}"</p>
+                        {% if request.session.user_id == quote.posted_by.id %}
+                            <small class="">(<a href="/deletequote/{{quote.id}}">Delete</a>)</small>
+                        {% endif %}
+                        <small class="text-muted">{{quote.likes.count}} People Like this</small>
+                        <form action='/createlike' method='post'>
+                            {% csrf_token %}
+                            <input type="hidden" name="quote_id" value="{{quote.id}}">
+                            <input type="submit" class="btn btn-primary btn-sm float-right" value="Like">
+                        </form>
+                        </div>
+                </div>
+                {% endfor %}
+                <!-- End of quote card -->
+            </div>
+            <div class="col-sm-4">
+                <h5 class="mb-3">Add a quote</h5>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'author_errors' in message.extra_tags or 'quote_errors' in message.extra_tags %}
+                        <p class="red">{{ message }}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <form action='/addquote' method='post'>
+                {% csrf_token %}
+                    <div class="form-group">
+                        <label>Author</label>
+                            <input type="text" class="form-control" name="author">
+                    </div>
+                    <div class="form-group">
+                        <label>Quote</label>
+                        <textarea class="form-control" name="quote" rows="3"></textarea>
+                    </div>
+                    <input type="submit" class="btn btn-primary float-right" value="Submit">
+                </form>
+            </div>
         </div>
     </div>
 </body>

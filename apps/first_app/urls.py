@@ -2,9 +2,17 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.index), #Main route to load index.html
-    url(r'sucess$', views.sucess), #Route to load the sucess.html page
-    url(r'processregistration$', views.registration), #post route for registration
-    url(r'logout$', views.logout), #route to logout
-    url(r'login$', views.login) #post route for login
+    #Rendering routes
+    url(r'^$', views.index),
+    url(r'user/(?P<number>[0-9]+)$', views.loaduser),
+    url(r'myaccount/(?P<number>[0-9]+)$', views.loadedituser),
+
+    #Processing routes
+    url(r'processregistration$', views.registration), 
+    url(r'logout$', views.logout),
+    url(r'login$', views.login),
+    url(r'addquote$', views.addquote),
+    url(r'edituser$', views.edituser),
+    url(r'createlike$', views.createlike),
+    url(r'deletequote/(?P<number>[0-9]+)$', views.deletequote)
 ] 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Quotes for Days! User Profile</title>
+    <!-- Botstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'first_app/css/styles.css' %}" />
+</head>
+<body>
+    <div class="container">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#"><img src="{% static 'first_app/images/flamingo.png' %}" alt="Website Logo" id="website_logo"/>
+            </a></a>
+            <ul class="navbar-nav mr-auto"></ul>
+            <a href="/" class="btn btn-light my-2 my-sm-0 mr-2">Back to Home</a>
+            <a href="/logout" class="btn btn-light my-2 my-sm-0">Logout</a>
+        </nav>
+        <div class="row">
+            <div class="col-sm-12">
+                <h1 class="display-4">{{user.first_name}}'s Quotes</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                {% for quote in quotes %}
+                <!-- Start of quote card -->
+                <div class="card mr-2 mb-3">
+                    <div class="card-body">
+                        <p class="card-text">{{quote.said_by.name}}: "{{quote.quote}}"</p>
+                    </div>
+                </div>
+                <!-- End of quote card -->
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
